@@ -1012,7 +1012,6 @@ If preferred you can easily convert Typed Index into Orders by using ServiceStac
 List<Order> expensiveOrders = expensiveOrderIndexes
     .Map(x => x.ConvertTo<Order>());
 ```
->>>>>>> 85fd8b1233708ff66487c4ebe998c96862870179
 
 ### [Global Secondary Indexes](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html)
 
