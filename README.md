@@ -455,7 +455,7 @@ var allTodos = todos.ToList();
 allTodos.PrintDump();
 ```
 
-Which incidentally is also just what `db.GetItem<Todo>()` does. 
+Which incidentally is also just what `db.GetAll<Todo>()` does. 
 
 ## Getting Items with AWSSDK
 
