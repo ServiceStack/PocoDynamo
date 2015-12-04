@@ -290,7 +290,7 @@ Whereas every request in PocoDynamo is invoked inside a managed execution where 
 
 All PocoDynamo API's returning `IEnumerable<T>` returns a lazy evaluated stream which behind-the-scenes sends multiple
 paged requests as needed whilst the sequence is being iterated. As LINQ API's are also lazily evaluated you could use 
-`Take()` to only download however the exact number results you need. So you can query the first 100 table names with:
+`Take()` to only download the exact number results you need. So you can query the first 100 table names with:
 
 ```csharp
 //PocoDynamo
@@ -568,77 +568,6 @@ and auto-conversion of dynamic results into typed POCOs.
 
 ### Query Usage
 
-Query's are the efficient way to Query DynamoDB since it's limited to querying indexed fields, i.e. the Hash and 
-Range Keys on your Tables or Table Indexes. Although it has the major limitation that it always needs to specify a Hash 
-condition, essentially forcing the query to be scoped to a single partition. This makes it especially useless for Tables
-with only a single Hash Primary Key like `Todo` as the query condition will always limit to a maximum of 1 result.
-
-Nevertheless we can still use it to show how to perform server-side queries with PocoDynamo. To create a 
-QueryExpression use the `FromQuery*` API's. It accepts a `KeyConditionExpression` as the first argument as it's a 
-mandatory requirement for Query Requests which is used to identify the partition the query should be executed on:
-
-```csharp
-var q = db.FromQuery<Todo>(x => x.Id == 1);
-```
-
-PocoDynamo parses this lambda expression to return a populated `QueryExpression<Todo>` which you can inspect to find 
-the `TableName` set to **Todo** and the `KeyConditionExpression` set to **(Id = :k0)** with the 
-`ExpressionAttributeValues` Dictionary containing a Numeric value of **1** for the key **:k0**.
-
-From here you can continue populating the QueryRequest DTO by calling the QueryExpression methods the names of which
-are modeled after the properties they populate, e.g. the `Filter()` API populates the `FilterExpression` property:
-
-```csharp
-q.Filter(x => x.Done);
-```
-
-After you've finished populating the Request DTO you can call PocoDynamo's `Query()` API to execute the query. 
-This returns a lazily executed resultset which you can use LINQ methods on to fetch the results. Given the primary key
-condition we know this will only return 0 or 1 rows based on whether or not the TODO has been completed which we can
-check with by calling LINQ's `FirstOrDefault()` method:
-
-```csharp
-var todo1 = db.Query(q).FirstOrDefault();
-```
-
-If `todo1` was completed it will return the populated `Todo`, otherwise it will return `null`.
-
-#### Expression Chaining
-
-Most `QueryExpression` methods returns itself and an alternative to calling `Query` on PocoDynamo (or AWSSDK) to execute 
-the Query, you can instead call the `Exec()` alias. This allows you to create and execute your DynamoDb Query in a 
-single expression which could instead be rewritten as:
-
-```csharp
-var todo1 = db.FromQuery<Todo>(x => x.Id == 1)
-    .Filter(x => x.Done)
-    .Exec()
-    .FirstOrDefault();
-```
-
-### Scan Operations
-
-
-## Supported LINQ Expressions
-
-Another area where PocoDynamo adds a lot of value that can be fairly cumbersome to do without, is in creating and 
-executing [Query and Scan](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/QueryAndScan.html) 
-requests to query data in DynamoDB Tables.
-
-### QueryExpressions are QueryRequests
-
-The query functionality in PocoDynamo is available on the `QueryExpression<T>` class which can be used as a typed query 
-builder to construct your Query request. An important attribute of QueryExpression's is that they simply inherit AWSSDK's 
-[QueryRequest](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LowLevelDotNetQuerying.html) Request DTO. 
-
-This provides a number of benefits, they're easy to understand and highly introspectable as each API just ends up 
-populating fields in the base `QueryRequest` DTO. They're highly reusable where QueryExpressions can be executed as-is 
-in both AWSSDK's DynamoDB client as well as PocoDynamo's `Query*` API's which can execute both `QueryExpression<T>` and 
-and AWSSDK's `QueryRequest` DTOs. The difference when executing queries in PocoDynamo are that they provide managed 
-execution, lazily evaluated streaming results, paged queries and auto-conversion of unstructured results into typed POCOs.
-
-### Query Usage
-
 [DynamoDB Query's](http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Query.html) enable efficient 
 querying of data in DynamoDB as it's limited to querying the indexed Hash and Range Keys on your Tables or Table Indexes. 
 Although it has the major limitation that it always needs to specify a Hash condition, essentially forcing the query 
@@ -703,6 +632,18 @@ var todo1Done = db.FromQuery<Todo>(x => x.Id == 1)
     .Exec()
     .FirstOrDefault();
 ```
+
+### Scan Operations
+
+Scan Operations work very similar to Query Operations but instead of using a `QueryExpression<T>` you would instead use a `ScanExpression<T>` which as it inherits from AWSSDK's `ScanRequest` Request DTO, provides the same reuse benefits as QueryExpression's. 
+
+To create a Scan Request you would use the `FromScan<T>` API, e.g:
+
+```csharp
+var q = db.FromScan<Todo>();
+```
+
+More examples of how to use typed LINQ expressions for creating and executing Query and Scan requests are described later.
 
 ### Related Items
 
