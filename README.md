@@ -547,6 +547,71 @@ var request = new DeleteItemRequest
 awsDb.DeleteItem(request);
 ```
 
+## Updating an Item with PocoDynamo
+
+The simplest usage is to pass in a partially populated POCO where any Hash or Range Keys are added to the 
+Key Condition and any non-default values are replaced. E.g the query below updates the Customer's Age to **42**:
+
+```csharp
+db.UpdateItemNonDefaults(new Customer { Id = customer.Id, Age = 42 });
+```
+
+DynamoDB's UpdateItem supports 3 different operation types: 
+
+ - `PUT` to replace an Attribute Value
+ - `ADD` to add to an existing Attribute Value
+ - `DELETE` to delete the specified Attributes
+
+Examples of all 3 are contained in the examples below which changes the Customer's `Nationality` to 
+**Australian**, reduces their `Age` by **1** and deletes their `Name` and `Orders`:
+
+```csharp
+db.UpdateItem(customer.Id, 
+    put: () => new Customer {
+        Nationality = "Australian"
+    },
+    add: () => new Customer {
+        Age = -1
+    },
+    delete: x => new { x.Name, x.Orders });
+```
+
+The same Typed API above is also available in the more flexible and untyped form below:
+
+```csharp
+db.UpdateItem<Customer>(new DynamoUpdateItem
+{
+    Hash = customer.Id,
+    Put = new Dictionary<string, object>
+    {
+        { "Nationality", "Australian" },
+    },
+    Add = new Dictionary<string, object>
+    {
+        { "Age", -1 }
+    },
+    Delete = new[] { "Name", "Orders" },
+});
+```
+
+Which is a typed Wrapper around the more flexible untyped API:
+
+```csharp
+db.UpdateItem<Customer>(new DynamoUpdateItem
+{
+    Hash = customer.Id,
+    Put = new Dictionary<string, object>
+    {
+        { "Nationality", "Australian" },
+    },
+    Add = new Dictionary<string, object>
+    {
+        { "Age", -1 }
+    },
+    Delete = new[] { "Name", "Orders" },
+});
+```
+
 ## Querying
 
 The simple Todo example should give you a feel for using PocoDynamo to handle basic CRUD operations. 
@@ -691,7 +756,7 @@ public class Order
 ```
 
 In order to use them we need to tell PocoDynamo which of the Types are Tables that it should create in DynamoDB which
-we can do by registering them then with PocoDynamo then calling `InitSchema()` which will go through and create any
+we can do by registering them with PocoDynamo then calling `InitSchema()` which will go through and create any
 of the tables that don't yet exist in DynamoDB: 
 
 ```csharp
@@ -933,7 +998,7 @@ List<OrderCostLocalIndex> expensiveOrderIndexes = db.FromQueryIndex<OrderCostLoc
     .Exec();
 ```
 
-This return a list of populated indexes that now includes the `Qty` field:
+This returns a list of populated indexes that now includes the `Qty` field:
 
     expensiveOrderIndexes.PrintDump();
     [
