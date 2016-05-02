@@ -16,6 +16,12 @@ with rich, native support for intuitively mapping your re-usable code-first POCO
 
 ![](https://raw.githubusercontent.com/ServiceStack/Assets/master/img/aws/pocodynamo/related-customer.png)
 
+#### [AutoQuery DynamoDB](https://github.com/ServiceStack/ServiceStack/wiki/AutoQuery-DynamoDB)
+
+Built on top of PocoDynamo, [AutoQuery Data's](https://github.com/ServiceStack/ServiceStack/wiki/AutoQuery-Data) 
+`DynamoDbSource` provides the most productive development experience for effortlessly creating rich, queryable 
+and optimized Services for DynamoDB data stores using only a typed Request DTO.
+
 ## Features
 
 #### Advanced idiomatic .NET client
