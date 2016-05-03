@@ -600,24 +600,6 @@ db.UpdateItem<Customer>(new DynamoUpdateItem
 });
 ```
 
-Which is a typed Wrapper around the more flexible untyped API:
-
-```csharp
-db.UpdateItem<Customer>(new DynamoUpdateItem
-{
-    Hash = customer.Id,
-    Put = new Dictionary<string, object>
-    {
-        { "Nationality", "Australian" },
-    },
-    Add = new Dictionary<string, object>
-    {
-        { "Age", -1 }
-    },
-    Delete = new[] { "Name", "Orders" },
-});
-```
-
 ## Querying
 
 The simple Todo example should give you a feel for using PocoDynamo to handle basic CRUD operations. 
