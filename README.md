@@ -1336,6 +1336,8 @@ IPocoDynamo eventuallyConsistentDb = db.ClientWith(consistentRead:false);
 To support different coding styles, readability/dependency preferences and levels of data model reuse, PocoDynamo 
 enables a wide array of options for specifying a table's Hash and Range Keys, in the following order or precedence:
 
+**Note: Hash and Range keys cannot be read-only calculated properties.
+
 ### Specifying a Hash Key
 
 Using the AWSSDK's `[DynamoDBHashKey]` attribute:
