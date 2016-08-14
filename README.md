@@ -22,6 +22,13 @@ Built on top of PocoDynamo, [AutoQuery Data's](https://github.com/ServiceStack/S
 `DynamoDbSource` provides the most productive development experience for effortlessly creating rich, queryable 
 and optimized Services for DynamoDB data stores using only a typed Request DTO.
 
+### Try out [PocoDynamo Live](http://gistlyn.com/pocodynamo-todo)
+
+A great way to try out PocoDynamo is on [gistlyn.com](http://gistlyn.com) which lets you immediately 
+run and explore PocoDynamo features from the comfort of your own browser without needing to install anything:
+
+[![](https://raw.githubusercontent.com/ServiceStack/Assets/master/img/aws/gistlyn-pocodynamo.png)](http://gistlyn.com/pocodynamo-todo)
+
 ## Features
 
 #### Advanced idiomatic .NET client
@@ -598,6 +605,22 @@ db.UpdateItem<Customer>(new DynamoUpdateItem
     },
     Delete = new[] { "Name", "Orders" },
 });
+```
+
+### Update with Conitional Expressions
+
+PocoDynamo also has Typed API support for 
+[DynamoDB Conitional Expressions](http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html#API_PutItem_RequestSyntax)
+by using the `Condition()` API, e.g:
+
+```csharp
+var q = db.UpdateExpression<Customer>(customer.Id)
+    .Set(() => new Customer { Nationality = "Australian" })
+    .Add(() => new Customer { Age = decrBy })
+    .Remove(x => new { x.Name, x.Orders })
+    .Condition(x => x.Age == 27);
+
+var succeeded = db.UpdateItem(q);
 ```
 
 ## Querying
