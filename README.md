@@ -25,7 +25,7 @@ and optimized Services for DynamoDB data stores using only a typed Request DTO.
 ### Try out [PocoDynamo Live](http://gistlyn.com/pocodynamo-todo)
 
 A great way to try out PocoDynamo is on [gistlyn.com](http://gistlyn.com) which lets you immediately 
-run and explore PocoDynamo features from the comfort of your own browser without needing to install anything:
+run and explore PocoDynamo features from the comfort of your browser with zero software install:
 
 [![](https://raw.githubusercontent.com/ServiceStack/Assets/master/img/aws/gistlyn-pocodynamo.png)](http://gistlyn.com/pocodynamo-todo)
 
