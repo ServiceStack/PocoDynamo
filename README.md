@@ -610,7 +610,7 @@ db.UpdateItem<Customer>(new DynamoUpdateItem
 });
 ```
 
-### Update with Conitional Expressions
+### Update with Conditional Expressions
 
 PocoDynamo also has Typed API support for 
 [DynamoDB Conitional Expressions](http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html#API_PutItem_RequestSyntax)
