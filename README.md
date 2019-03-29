@@ -25,12 +25,56 @@ Built on top of PocoDynamo, [AutoQuery Data's](https://github.com/ServiceStack/S
 `DynamoDbSource` provides the most productive development experience for effortlessly creating rich, queryable 
 and optimized Services for DynamoDB data stores using only a typed Request DTO.
 
-### Try out [PocoDynamo Live](http://gistlyn.com/pocodynamo-todo)
+### Quick Preview
 
-A great way to try out PocoDynamo is on [gistlyn.com](http://gistlyn.com) which lets you immediately 
-run and explore PocoDynamo features from the comfort of your browser with zero software install:
+A quick CRUD preview of `PocoDynaamo` feature-rich high-level Typed client:
 
-[![](https://raw.githubusercontent.com/ServiceStack/Assets/master/img/aws/gistlyn-pocodynamo.png)](http://gistlyn.com/pocodynamo-todo)
+```csharp
+using System;
+using Amazon;
+using Amazon.DynamoDBv2;
+using ServiceStack;
+using ServiceStack.Text;
+using ServiceStack.Aws.DynamoDb;
+using ServiceStack.DataAnnotations;
+
+var awsDb = new AmazonDynamoDBClient("keyId","key",new AmazonDynamoDBConfig { ServiceURL="http://localhost:8000"});
+var db = new PocoDynamo(awsDb);
+
+public class Todo
+{
+    [AutoIncrement]
+    public long Id { get; set; }
+    public string Content { get; set; }
+    public int Order { get; set; }
+    public bool Done { get; set; }
+}
+
+db.RegisterTable<Todo>();
+
+db.DeleteTable<Todo>();  // Delete existing Todo Table (if any)
+db.InitSchema();         // Creates Todo DynamoDB Table
+
+var newTodo = new Todo {
+    Content = "Learn PocoDynamo",
+    Order = 1
+};
+db.PutItem(newTodo);
+
+var savedTodo = db.GetItem<Todo>(newTodo.Id);
+"Saved Todo: {0}".Print(savedTodo.Dump());
+
+savedTodo.Done = true;
+db.PutItem(savedTodo);
+
+var updatedTodo = db.GetItem<Todo>(newTodo.Id);
+"Updated Todo: {0}".Print(updatedTodo.Dump());
+
+db.DeleteItem<Todo>(newTodo.Id);
+
+var remainingTodos = db.GetAll<Todo>();
+"No more Todos: {0}".Print(remainingTodos.Dump());
+```
 
 ## Features
 
