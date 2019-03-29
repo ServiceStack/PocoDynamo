@@ -38,7 +38,8 @@ using ServiceStack.Text;
 using ServiceStack.Aws.DynamoDb;
 using ServiceStack.DataAnnotations;
 
-var awsDb = new AmazonDynamoDBClient("keyId","key",new AmazonDynamoDBConfig { ServiceURL="http://localhost:8000"});
+var awsDb = new AmazonDynamoDBClient("keyId","key",
+    new AmazonDynamoDBConfig { ServiceURL="http://localhost:8000"});
 var db = new PocoDynamo(awsDb);
 
 public class Todo
